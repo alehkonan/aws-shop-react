@@ -36,3 +36,8 @@ Runs tests in console, in browser or with coverage.
 ### `lint`, `prettier`
 
 Runs linting and formatting for all files in `src` folder.
+
+## AWS deployment
+
+- S3 Bucket [http://frontendstack-frontendbucketefe2e19c-ft4nah8vzscx.s3-website-us-east-1.amazonaws.com](http://frontendstack-frontendbucketefe2e19c-ft4nah8vzscx.s3-website-us-east-1.amazonaws.com)
+- CloudFront [https://d2rcjsjs5l9fv3.cloudfront.net](https://d2rcjsjs5l9fv3.cloudfront.net)
