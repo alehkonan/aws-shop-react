@@ -13,10 +13,15 @@ export const handler: Handler<
     const productsService = new ProductsService();
     const products = await productsService.getAllProducts();
 
-    if (!products || !products.length) {
+    if (!products) {
       return {
-        statusCode: 204,
-        body: "",
+        statusCode: 404,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `Products were not found`,
+        }),
       };
     }
 
