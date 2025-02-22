@@ -4,6 +4,7 @@ import {
   Handler,
 } from "aws-lambda";
 import { ProductsService } from "../products.service.ts";
+import { corsHeaders } from "./helpers.ts";
 
 export const handler: Handler<
   APIGatewayProxyEvent,
@@ -16,6 +17,7 @@ export const handler: Handler<
       return {
         statusCode: 400,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ message: "Product id was not provided" }),
@@ -29,6 +31,7 @@ export const handler: Handler<
       return {
         statusCode: 404,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -40,6 +43,7 @@ export const handler: Handler<
     return {
       statusCode: 200,
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(product),
@@ -48,6 +52,7 @@ export const handler: Handler<
     return {
       statusCode: 500,
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ message: "Internal server error" }),
