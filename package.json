@@ -12,7 +12,7 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint --ignore-path .gitignore --fix src",
     "prettier": "prettier src --write",
-    "deploy": "npm run build && cdk deploy",
+    "deploy": "npm run build && cdk deploy --all",
     "destroy": "cdk destroy"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^14.2.1",
+    "@types/aws-lambda": "^8.10.147",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
