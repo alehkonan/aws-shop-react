@@ -5,7 +5,7 @@ import {
   Handler,
 } from "aws-lambda";
 import { ProductsService } from "../products.service.ts";
-import { corsHeaders } from "./helpers.ts";
+import { corsHeaders, logRequestArguments } from "./helpers.ts";
 
 const productCreateSchema = yup.object({
   title: yup.string(),
@@ -17,9 +17,10 @@ const productCreateSchema = yup.object({
 export const handler: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
-> = async ({ body }) => {
+> = async (event) => {
+  logRequestArguments(event);
   try {
-    const product = await productCreateSchema.validate(JSON.parse(body));
+    const product = await productCreateSchema.validate(JSON.parse(event.body));
 
     const productsService = new ProductsService();
 
