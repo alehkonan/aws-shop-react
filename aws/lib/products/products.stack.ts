@@ -83,7 +83,7 @@ export class ProductsStack extends cdk.Stack {
         stageName: "dev",
       },
       defaultCorsPreflightOptions: {
-        allowOrigins: ["https://d2rcjsjs5l9fv3.cloudfront.net"],
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
       },
     });
 
