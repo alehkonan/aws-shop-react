@@ -13,9 +13,12 @@
     "lint": "eslint --ignore-path .gitignore --fix src",
     "prettier": "prettier src --write",
     "deploy": "npm run build && cdk deploy --all",
-    "destroy": "cdk destroy"
+    "destroy": "cdk destroy",
+    "seed": "node --experimental-strip-types aws/scripts/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.751.0",
+    "@aws-sdk/util-dynamodb": "^3.751.0",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.8.4",
@@ -30,6 +33,7 @@
     "react-dom": "^18.2.0",
     "react-query": "^3.39.1",
     "react-router-dom": "^6.3.0",
+    "uuid": "^11.1.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {

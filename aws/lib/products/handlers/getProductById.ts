@@ -4,14 +4,15 @@ import {
   Handler,
 } from "aws-lambda";
 import { ProductsService } from "../products.service.ts";
-import { corsHeaders } from "./helpers.ts";
+import { corsHeaders, logRequestArguments } from "./helpers.ts";
 
 export const handler: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
-> = async ({ pathParameters }) => {
+> = async (event) => {
+  logRequestArguments(event);
   try {
-    const productId = pathParameters?.productId;
+    const productId = event.pathParameters?.productId;
 
     if (!productId) {
       return {

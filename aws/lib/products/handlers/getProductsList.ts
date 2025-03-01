@@ -4,12 +4,13 @@ import {
   Handler,
 } from "aws-lambda";
 import { ProductsService } from "../products.service.ts";
-import { corsHeaders } from "./helpers.ts";
+import { corsHeaders, logRequestArguments } from "./helpers.ts";
 
 export const handler: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
-> = async () => {
+> = async (event) => {
+  logRequestArguments(event);
   try {
     const productsService = new ProductsService();
     const products = await productsService.getAllProducts();
