@@ -8,10 +8,10 @@ import { ProductsService } from "../products.service.ts";
 import { corsHeaders, logRequestArguments } from "./helpers.ts";
 
 const productCreateSchema = yup.object({
-  title: yup.string(),
-  description: yup.string(),
-  price: yup.number().min(0),
-  count: yup.number().min(0).integer(),
+  title: yup.string().required().trim().min(0),
+  description: yup.string().required().trim().min(0),
+  price: yup.number().required().positive(),
+  count: yup.number().integer().required().min(0),
 });
 
 export const handler: Handler<
@@ -20,7 +20,9 @@ export const handler: Handler<
 > = async (event) => {
   logRequestArguments(event);
   try {
-    const product = await productCreateSchema.validate(JSON.parse(event.body));
+    const product = await productCreateSchema.validate(JSON.parse(event.body), {
+      abortEarly: false,
+    });
 
     const productsService = new ProductsService();
 
