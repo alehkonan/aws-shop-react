@@ -1,29 +1,120 @@
-import { Product } from "./products.type.ts";
-
-// TODO get data from BD
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    title: "Product 1",
-    description: "Description 1",
-    price: 99.99,
-    count: 10,
-  },
-  {
-    id: "2",
-    title: "Product 2",
-    description: "Description 2",
-    price: 149.99,
-    count: 5,
-  },
-];
+import { v4 as uuid } from "uuid";
+import {
+  DynamoDBClient,
+  GetItemCommand,
+  ScanCommand,
+  TransactWriteItemsCommand,
+} from "@aws-sdk/client-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+import { ProductDto, CreateProductDto } from "./products.type.ts";
 
 export class ProductsService {
-  async getAllProducts(): Promise<Product[]> {
-    return mockProducts;
+  #dynamoClient: DynamoDBClient;
+  #productsTable: string;
+  #stocksTable: string;
+
+  constructor() {
+    this.#dynamoClient = new DynamoDBClient();
+    this.#productsTable = process.env.PRODUCTS_TABLE;
+    this.#stocksTable = process.env.STOCKS_TABLE;
   }
 
-  async getProductById(productId: string): Promise<Product | undefined> {
-    return mockProducts.find((product) => product.id === productId);
+  async getAllProducts(): Promise<ProductDto[]> {
+    const result = await Promise.all([
+      this.#dynamoClient.send(
+        new ScanCommand({
+          TableName: this.#productsTable,
+        })
+      ),
+      this.#dynamoClient.send(
+        new ScanCommand({
+          TableName: this.#stocksTable,
+        })
+      ),
+    ]);
+
+    const [products, stocks] = result.map(({ Items }) => {
+      return Items?.map((item) => unmarshall(item)) || [];
+    });
+
+    return products.map((product) => {
+      const stock = stocks.find((stock) => stock.product_id === product.id);
+
+      return {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        count: stock?.count || 0,
+      };
+    });
+  }
+
+  async getProductById(productId: string): Promise<ProductDto | undefined> {
+    const result = await Promise.all([
+      this.#dynamoClient.send(
+        new GetItemCommand({
+          TableName: this.#productsTable,
+          Key: marshall({ id: productId }),
+        })
+      ),
+      this.#dynamoClient.send(
+        new GetItemCommand({
+          TableName: this.#stocksTable,
+          Key: marshall({ product_id: productId }),
+        })
+      ),
+    ]);
+
+    const [product, stock] = result.map(({ Item }) => unmarshall(Item));
+
+    if (!product) return undefined;
+
+    return {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      count: stock?.count || 0,
+    };
+  }
+
+  async createProduct(productDto: CreateProductDto): Promise<ProductDto> {
+    const product: ProductDto = {
+      id: uuid(),
+      title: productDto.title,
+      description: productDto.description,
+      price: productDto.price,
+      count: productDto.count,
+    };
+
+    await this.#dynamoClient.send(
+      new TransactWriteItemsCommand({
+        TransactItems: [
+          {
+            Put: {
+              TableName: this.#productsTable,
+              Item: marshall({
+                id: product.id,
+                title: product.title,
+                description: product.description,
+                price: product.price,
+              }),
+            },
+          },
+          {
+            Put: {
+              TableName: this.#stocksTable,
+              Item: marshall({
+                product_id: product.id,
+                count: product.count,
+              }),
+            },
+          },
+        ],
+      })
+    );
+
+    return product;
   }
 }

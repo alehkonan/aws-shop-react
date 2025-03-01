@@ -15,6 +15,18 @@ export class ProductsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const productsTable = cdk.aws_dynamodb.Table.fromTableName(
+      this,
+      "ProductsTable",
+      "products"
+    );
+
+    const stocksTable = cdk.aws_dynamodb.Table.fromTableName(
+      this,
+      "StocksTable",
+      "stocks"
+    );
+
     const getProductsListFunction = new NodejsFunction(
       this,
       "GetProductsListFunction",
@@ -22,6 +34,10 @@ export class ProductsStack extends cdk.Stack {
         entry: path.join(handlersPath, "getProductsList.ts"),
         handler: "handler",
         runtime: lambda.Runtime.NODEJS_22_X,
+        environment: {
+          PRODUCTS_TABLE: productsTable.tableName,
+          STOCKS_TABLE: stocksTable.tableName,
+        },
       }
     );
 
@@ -32,8 +48,34 @@ export class ProductsStack extends cdk.Stack {
         runtime: lambda.Runtime.NODEJS_22_X,
         entry: path.join(handlersPath, "getProductById.ts"),
         handler: "handler",
+        environment: {
+          PRODUCTS_TABLE: productsTable.tableName,
+          STOCKS_TABLE: stocksTable.tableName,
+        },
       }
     );
+
+    const createProductFunction = new NodejsFunction(
+      this,
+      "CreateProductFunction",
+      {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        entry: path.join(handlersPath, "createProduct.ts"),
+        handler: "handler",
+        timeout: cdk.Duration.seconds(30),
+        environment: {
+          PRODUCTS_TABLE: productsTable.tableName,
+          STOCKS_TABLE: stocksTable.tableName,
+        },
+      }
+    );
+
+    productsTable.grantReadData(getProductsListFunction);
+    stocksTable.grantReadData(getProductsListFunction);
+    productsTable.grantReadData(getProductByIdFunction);
+    stocksTable.grantReadData(getProductByIdFunction);
+    productsTable.grantReadWriteData(createProductFunction);
+    stocksTable.grantReadWriteData(createProductFunction);
 
     const productsApi = new apigateway.RestApi(this, "ProductsApi", {
       restApiName: "Products Api",
@@ -41,7 +83,7 @@ export class ProductsStack extends cdk.Stack {
         stageName: "dev",
       },
       defaultCorsPreflightOptions: {
-        allowOrigins: ["https://d2rcjsjs5l9fv3.cloudfront.net"],
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
       },
     });
 
@@ -49,6 +91,10 @@ export class ProductsStack extends cdk.Stack {
     products.addMethod(
       "GET",
       new apigateway.LambdaIntegration(getProductsListFunction)
+    );
+    products.addMethod(
+      "POST",
+      new apigateway.LambdaIntegration(createProductFunction)
     );
 
     const product = products.addResource("{productId}");
