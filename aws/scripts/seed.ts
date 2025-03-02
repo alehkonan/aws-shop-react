@@ -1,9 +1,9 @@
+import { randomUUID } from "node:crypto";
 import {
   DynamoDBClient,
   BatchWriteItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall } from "@aws-sdk/util-dynamodb";
-import { v4 as uuid } from "uuid";
 import type { ProductDto } from "../lib/products/products.type.ts";
 
 const dynamoClient = new DynamoDBClient();
@@ -12,28 +12,28 @@ const STOCKS_TABLE = "stocks";
 
 const mockProducts: ProductDto[] = [
   {
-    id: uuid(),
+    id: randomUUID(),
     title: "Apple",
     description: "Apple from Poland",
     price: 1.5,
     count: 199,
   },
   {
-    id: uuid(),
+    id: randomUUID(),
     title: "Pineapple",
     description: "Apple from Africa",
     price: 2.7,
     count: 120,
   },
   {
-    id: uuid(),
+    id: randomUUID(),
     title: "Avocado",
     description: "Green avocado",
     price: 4.1,
     count: 49,
   },
   {
-    id: uuid(),
+    id: randomUUID(),
     title: "Banana",
     description: "Big banana",
     price: 0.9,

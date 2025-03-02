@@ -1,4 +1,4 @@
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "node:crypto";
 import {
   DynamoDBClient,
   GetItemCommand,
@@ -81,7 +81,7 @@ export class ProductsService {
 
   async createProduct(productDto: CreateProductDto): Promise<ProductDto> {
     const product: ProductDto = {
-      id: uuid(),
+      id: randomUUID(),
       title: productDto.title,
       description: productDto.description,
       price: productDto.price,
