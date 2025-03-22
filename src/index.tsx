@@ -15,6 +15,9 @@ const queryClient = new QueryClient({
   },
 });
 
+// TODO add valid token on the login page after success authentication
+localStorage.setItem("authorization_token", import.meta.env.VITE_AUTH_TOKEN);
+
 if (import.meta.env.MODE === "mock") {
   const { worker } = await import("./mocks/browser");
   worker.start({ onUnhandledRequest: "bypass" });
