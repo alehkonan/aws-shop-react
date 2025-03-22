@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { theme } from "~/theme";
+import { AlertProvider } from "./providers/AlertProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ root.render(
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <App />
+          <AlertProvider />
         </ThemeProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
