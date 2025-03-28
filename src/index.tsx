@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { theme } from "~/theme";
+import { AlertProvider } from "./providers/AlertProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,7 +15,10 @@ const queryClient = new QueryClient({
   },
 });
 
-if (import.meta.env.DEV) {
+// TODO add valid token on the login page after success authentication
+localStorage.setItem("authorization_token", import.meta.env.VITE_AUTH_TOKEN);
+
+if (import.meta.env.MODE === "mock") {
   const { worker } = await import("./mocks/browser");
   worker.start({ onUnhandledRequest: "bypass" });
 }
@@ -29,6 +33,7 @@ root.render(
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <App />
+          <AlertProvider />
         </ThemeProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
