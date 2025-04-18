@@ -4,6 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "react-query";
 import API_PATHS from "~/constants/apiPaths";
 import { OrderStatus } from "~/constants/order";
 import { Order } from "~/models/Order";
+import { handleNetworkError } from "~/utils/errors";
 
 type FinishedOrder = {
   id: string;
@@ -21,11 +22,14 @@ export function useOrders() {
     queryKey: ["orders"],
     queryFn: async () => {
       const token = localStorage.getItem("authorization_token");
-      const res = await axios.get<FinishedOrder[]>(`${API_PATHS.order}/order`, {
-        headers: {
-          Authorization: token && `Basic ${token}`,
-        },
-      });
+      const res = await axios.get<FinishedOrder[]>(
+        `${API_PATHS.bff}/cart/order`,
+        {
+          headers: {
+            Authorization: token && `Basic ${token}`,
+          },
+        }
+      );
 
       return res.data;
     },
@@ -59,7 +63,7 @@ export function useSubmitOrder() {
   return useMutation({
     mutationFn: async (values: Omit<Order, "id">) => {
       const token = localStorage.getItem("authorization_token");
-      return axios.put(`${API_PATHS.order}/order`, values, {
+      return axios.put(`${API_PATHS.bff}/cart/order`, values, {
         headers: { Authorization: token && `Basic ${token}` },
       });
     },
@@ -68,6 +72,7 @@ export function useSubmitOrder() {
         queryKey: ["orders"],
       });
     },
+    onError: handleNetworkError,
   });
 }
 
