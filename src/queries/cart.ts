@@ -4,6 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "react-query";
 import API_PATHS from "~/constants/apiPaths";
 import { CartItem } from "~/models/CartItem";
 import { useAvailableProducts } from "./products";
+import { handleNetworkError } from "~/utils/errors";
 
 type CartResponse = {
   productId: string;
@@ -64,5 +65,6 @@ export function useUpsertCart() {
         }
       );
     },
+    onError: handleNetworkError,
   });
 }

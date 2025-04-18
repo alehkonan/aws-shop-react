@@ -1,7 +1,8 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import axios, { HttpStatusCode, isAxiosError } from "axios";
+import axios from "axios";
+import { handleNetworkError } from "~/utils/errors";
 
 type CSVFileImportProps = {
   url: string;
@@ -46,30 +47,7 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
       console.log("Result: ", result);
       setFile(undefined);
     } catch (error) {
-      if (isAxiosError(error)) {
-        if (error.response?.status === HttpStatusCode.Unauthorized) {
-          window.dispatchEvent(
-            new CustomEvent<AlertDetail>("alert", {
-              detail: {
-                message:
-                  "Can not upload file. Status code is 401 Unauthorized. Please, check if token exists",
-              },
-            })
-          );
-          return;
-        }
-        if (error.response?.status === HttpStatusCode.Forbidden) {
-          window.dispatchEvent(
-            new CustomEvent<AlertDetail>("alert", {
-              detail: {
-                message:
-                  "Can not upload file. Status code is 403 Forbidden. Please, check if token is valid",
-              },
-            })
-          );
-          return;
-        }
-      }
+      handleNetworkError(error);
     }
   };
 

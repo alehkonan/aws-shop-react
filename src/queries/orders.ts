@@ -4,6 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "react-query";
 import API_PATHS from "~/constants/apiPaths";
 import { OrderStatus } from "~/constants/order";
 import { Order } from "~/models/Order";
+import { handleNetworkError } from "~/utils/errors";
 
 type FinishedOrder = {
   id: string;
@@ -71,6 +72,7 @@ export function useSubmitOrder() {
         queryKey: ["orders"],
       });
     },
+    onError: handleNetworkError,
   });
 }
 
