@@ -29,7 +29,10 @@ export default function PageProductForm() {
           ...formattedValues,
           id,
         }
-      : formattedValues;
+      : {
+          ...formattedValues,
+          image: `https://picsum.photos/seed/${formattedValues.title}/160/90`,
+        };
     return upsertAvailableProduct(productToSave, {
       onSuccess: () => {
         invalidateAvailableProducts();
