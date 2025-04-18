@@ -18,7 +18,7 @@ export function useCart() {
     queryFn: async () => {
       const token = localStorage.getItem("authorization_token");
       const res = await axios.get<CartResponse>(
-        `${API_PATHS.cart}/api/profile/cart`,
+        `${API_PATHS.bff}/cart/api/profile/cart`,
         {
           headers: {
             Authorization: token && `Basic ${token}`,
@@ -51,12 +51,18 @@ export function useInvalidateCart() {
 }
 
 export function useUpsertCart() {
-  return useMutation((values: CartItem) => {
-    const token = localStorage.getItem("authorization_token");
-    return axios.put<CartItem[]>(`${API_PATHS.cart}/api/profile/cart`, values, {
-      headers: {
-        Authorization: token && `Basic ${token}`,
-      },
-    });
+  return useMutation({
+    mutationFn: (values: CartItem) => {
+      const token = localStorage.getItem("authorization_token");
+      return axios.put<CartItem[]>(
+        `${API_PATHS.bff}/cart/api/profile/cart`,
+        values,
+        {
+          headers: {
+            Authorization: token && `Basic ${token}`,
+          },
+        }
+      );
+    },
   });
 }

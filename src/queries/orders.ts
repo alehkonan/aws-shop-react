@@ -21,11 +21,14 @@ export function useOrders() {
     queryKey: ["orders"],
     queryFn: async () => {
       const token = localStorage.getItem("authorization_token");
-      const res = await axios.get<FinishedOrder[]>(`${API_PATHS.order}/order`, {
-        headers: {
-          Authorization: token && `Basic ${token}`,
-        },
-      });
+      const res = await axios.get<FinishedOrder[]>(
+        `${API_PATHS.bff}/cart/order`,
+        {
+          headers: {
+            Authorization: token && `Basic ${token}`,
+          },
+        }
+      );
 
       return res.data;
     },
@@ -59,7 +62,7 @@ export function useSubmitOrder() {
   return useMutation({
     mutationFn: async (values: Omit<Order, "id">) => {
       const token = localStorage.getItem("authorization_token");
-      return axios.put(`${API_PATHS.order}/order`, values, {
+      return axios.put(`${API_PATHS.bff}/cart/order`, values, {
         headers: { Authorization: token && `Basic ${token}` },
       });
     },
