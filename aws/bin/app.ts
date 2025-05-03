@@ -1,6 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import { FrontendStack } from "../lib/frontend.ts";
-import { ProductsStack } from "../lib/products/products.stack.ts";
+import { FrontendStack } from "../lib/frontend.stack.ts";
 
 const env: cdk.Environment = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -10,5 +9,3 @@ const env: cdk.Environment = {
 const app = new cdk.App();
 
 new FrontendStack(app, "FrontendStack", { env });
-
-new ProductsStack(app, "ProductsStack", { env });
